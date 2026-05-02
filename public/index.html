@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible AI - Your Spiritual Guide</title>
+    <style>
+        :root {
+            --primary: #3b1f0b;
+            --secondary: #6b3a1f;
+            --gold: #d4a843;
+            --light: #fdf6e3;
+            --dark: #1a0f05;
+            --accent: #c0392b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1a0f05 0%, #2c1810 50%, #1a0f05 100%);
+            min-height: 100vh;
+            color: var(--light);
+            background-image: 
+                radial-gradient(ellipse at top, rgba(212,168,67,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(212,168,67,0.05) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '✝';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            padding: 0 15px;
+            font-size: 20px;
+            color: var(--gold);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: var(--gold);
+            text-shadow: 0 2px 10px rgba(212,168,67,0.3);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #c4a882;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+
+        .verse-decoration {
+            text-align: center;
+            color: var(--gold);
+            opacity: 0.6;
+            font-style: italic;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(59,31,11,0.3);
+            border: 1px solid rgba(212,168,67,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: var(--light);
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(253,246,227,0.1);
+            color: #e8d5b7;
+            border: 1px solid rgba(212,168,67,0.3);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.bot.error {
+            border-color: var(--accent);
+            background: rgba(192,57,43,0.1);
+        }
+
+        .typing-indicator {
+            align-self: flex-start;
+            background: rgba(253,246,227,0.05);
+            padding: 15px 20px;
+            border-radius: 15px;
+            border-bottom-left-radius: 5px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .input-container {
+            padding: 20px;
+            border-top: 1px solid rgba(212,168,67,0.2);
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        #promptInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid rgba(212,168,67,0.3);
+            border-radius: 25px;
+            background: rgba(253,246,227,0.1);
+            color: var(--light);
+            font-size: 1em;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #promptInput:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212,168,67,0.2);
+        }
+
+        #promptInput::placeholder {
+            color: rgba(200,200,200,0.5);
+        }
+
+        .btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--gold), #b8923c);
+            border: none;
+            border-radius: 25px;
+            color: var(--dark);
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212,168,67,0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.8em;
+            color: rgba(200,200,200,0.5);
+            padding: 5px 15px 0 0;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 20px;
+            justify-content: center;
+        }
+
+        .suggestion-chip {
+            padding: 8px 15px;
+            background: rgba(212,168,67,0.1);
+            border: 1px solid rgba(212,168,67,0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #d4b896;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(212,168,67,0.2);
+            border-color: var(--gold);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(200,200,200,0.4);
+            font-size: 0.8em;
+        }
+
+        .error-message {
+            background: rgba(255,0,0,0.1);
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(212,168,67,0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📖 Bible AI</h1>
+            <p class="subtitle">Ask, and it shall be answered — Matthew 7:7</p>
+            <p class="verse-decoration">✦ Your Spiritual Guide & Scripture Companion ✦</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    🙏 Welcome! I'm your Bible AI assistant. Ask me anything about scripture, faith, prayer, or spiritual guidance. How can I help you today?
+                </div>
+            </div>
+
+            <div class="suggestions" id="suggestions">
+                <span class="suggestion-chip" onclick="askSuggestion(this)">What does the Bible say about love?</span>
+                <span class="suggestion-chip" onclick="askSuggestion(this)">Explain John 3:16</span>
+                <span class="suggestion-chip" onclick="askSuggestion(this)">Prayer for peace</span>
+                <span class="suggestion-chip" onclick="askSuggestion(this)">Who was King David?</span>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="char-count" id="charCount">0/500 characters</div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="promptInput" 
+                    placeholder="Ask a biblical question... ✝️" 
+                    maxlength="500"
+                    onkeypress="handleKeyPress(event)"
+                    oninput="updateCharCount()"
+                >
+                <button class="btn" id="sendBtn" onclick="sendMessage()">Send 🙏</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>"Your word is a lamp to my feet and a light to my path." — Psalm 119:105</p>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const promptInput = document.getElementById('promptInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const errorDiv = document.getElementById('errorMessage');
+        const charCount = document.getElementById('charCount');
+        const suggestions = document.getElementById('suggestions');
+
+        function updateCharCount() {
+            const count = promptInput.value.length;
+            charCount.textContent = `${count}/500 characters`;
+            if (count > 450) {
+                charCount.style.color = '#ff6b6b';
+            } else {
+                charCount.style.color = 'rgba(200,200,200,0.5)';
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageDiv;
+        }
+
+        function addTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            `;
+            typingDiv.id = 'typingIndicator';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingDiv = document.getElementById('typingIndicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideSuggestions() {
+            suggestions.style.display = 'none';
+        }
+
+        async function sendMessage() {
+            const prompt = promptInput.value.trim();
+            
+            if (!prompt) return;
+            
+            if (prompt.length > 500) {
+                showError('Your question is too long. Please keep it under 500 characters.');
+                return;
+            }
+
+            // Add user message
+            addMessage(prompt, 'user');
+            promptInput.value = '';
+            updateCharCount();
+            hideSuggestions();
+
+            // Disable input
+            promptInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // Show typing indicator
+            addTypingIndicator();
+
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                removeTypingIndicator();
+
+                if (!response.ok) {
+                    if (response.status === 429) {
+                        const data = await response.json();
+                        throw new Error(data.error || 'Too many requests. Please wait a moment.');
+                    } else if (response.status === 403) {
+                        throw new Error('Access denied. Please use the official website.');
+                    } else {
+                        throw new Error('Failed to get response. Please try again.');
+                    }
+                }
+
+                const data = await response.json();
+                
+                // Handle different response formats
+                let botResponse = '';
+                if (typeof data === 'string') {
+                    botResponse = data;
+                } else if (data.response) {
+                    botResponse = data.response;
+                } else if (data.message) {
+                    botResponse = data.message;
+                } else if (data.answer) {
+                    botResponse = data.answer;
+                } else {
+                    botResponse = JSON.stringify(data);
+                }
+
+                addMessage(botResponse, 'bot');
+
+            } catch (error) {
+                removeTypingIndicator();
+                const errorMsg = addMessage('❌ ' + error.message, 'bot');
+                errorMsg.classList.add('error');
+                showError(error.message);
+            } finally {
+                // Re-enable input
+                promptInput.disabled = false;
+                sendBtn.disabled = false;
+                promptInput.focus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function askSuggestion(chip) {
+            promptInput.value = chip.textContent;
+            sendMessage();
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            promptInput.focus();
+            updateCharCount();
+        });
+    </script>
+</body>
+</html>
