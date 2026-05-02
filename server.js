@@ -14,7 +14,7 @@ const BIBLE_API_URL = 'https://pasayloakomego.onrender.com/api/bibleai';
 // Allowed origins - ONLY your deployed URLs can access this backend
 const ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'http://localhost:5000',
+    'http://biblaaigpt.vercel.app',
     // Add your Render/Vercel deployed URL here after deployment
     // Example: 'https://your-app.onrender.com',
     // Example: 'https://your-app.vercel.app'
