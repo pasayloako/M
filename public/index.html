@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bible AI - Your Spiritual Guide</title>
+    
+    <!-- SmartiePal AI Assistant -->
+    <script id="smartiepalScript" src="https://smartiepal.pages.dev/loader.js?assistant_id=276a553a6169dd8cbfa272104178e04f63d9b10258aa52406faf23a32ed8a492" async></script>
+    
     <style>
         :root {
-            --primary: #3b1f0b;
-            --secondary: #6b3a1f;
-            --gold: #d4a843;
-            --light: #fdf6e3;
-            --dark: #1a0f05;
-            --accent: #c0392b;
+            --primary: #2c1810;
+            --secondary: #5c3a28;
+            --gold: #f0c040;
+            --light: #fff8e7;
+            --dark: #0d0805;
+            --accent: #e74c3c;
+            --user-bg: #1a5276;
+            --bot-bg: #1e3d2f;
         }
 
         * {
@@ -22,12 +28,12 @@
 
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #1a0f05 0%, #2c1810 50%, #1a0f05 100%);
+            background: linear-gradient(135deg, #0d0805 0%, #1a0f08 50%, #0d0805 100%);
             min-height: 100vh;
-            color: var(--light);
+            color: #ffffff;
             background-image: 
-                radial-gradient(ellipse at top, rgba(212,168,67,0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(212,168,67,0.05) 0%, transparent 50%);
+                radial-gradient(ellipse at top, rgba(240,192,64,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(240,192,64,0.05) 0%, transparent 50%);
         }
 
         .container {
@@ -53,7 +59,7 @@
             bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--dark);
+            background: #0d0805;
             padding: 0 15px;
             font-size: 20px;
             color: var(--gold);
@@ -62,13 +68,13 @@
         .header h1 {
             font-size: 2.5em;
             color: var(--gold);
-            text-shadow: 0 2px 10px rgba(212,168,67,0.3);
+            text-shadow: 0 2px 15px rgba(240,192,64,0.4);
             letter-spacing: 2px;
             margin-bottom: 10px;
         }
 
         .header .subtitle {
-            color: #c4a882;
+            color: #e8d5b7;
             font-style: italic;
             font-size: 1.1em;
         }
@@ -76,7 +82,7 @@
         .verse-decoration {
             text-align: center;
             color: var(--gold);
-            opacity: 0.6;
+            opacity: 0.8;
             font-style: italic;
             margin: 10px 0;
             font-size: 0.9em;
@@ -86,12 +92,12 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: rgba(59,31,11,0.3);
-            border: 1px solid rgba(212,168,67,0.3);
+            background: rgba(20,15,10,0.6);
+            border: 2px solid rgba(240,192,64,0.4);
             border-radius: 15px;
             overflow: hidden;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 50px rgba(240,192,64,0.03);
         }
 
         .chat-messages {
@@ -101,14 +107,17 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            background: rgba(10,5,0,0.3);
         }
 
         .message {
             max-width: 80%;
-            padding: 15px 20px;
+            padding: 16px 20px;
             border-radius: 15px;
-            line-height: 1.6;
+            line-height: 1.7;
             animation: fadeIn 0.3s ease;
+            font-size: 1.05em;
+            word-wrap: break-word;
         }
 
         @keyframes fadeIn {
@@ -118,41 +127,45 @@
 
         .message.user {
             align-self: flex-end;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            color: var(--light);
+            background: linear-gradient(135deg, #1a5276, #154360);
+            color: #ffffff;
             border-bottom-right-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 15px rgba(26,82,118,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .message.bot {
             align-self: flex-start;
-            background: rgba(253,246,227,0.1);
-            color: #e8d5b7;
-            border: 1px solid rgba(212,168,67,0.3);
+            background: linear-gradient(135deg, #1e3d2f, #1a3328);
+            color: #e8f5e9;
             border-bottom-left-radius: 5px;
+            box-shadow: 0 3px 15px rgba(30,61,47,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .message.bot.error {
             border-color: var(--accent);
-            background: rgba(192,57,43,0.1);
+            background: linear-gradient(135deg, #4a1515, #3d1010);
+            color: #ffcccc;
         }
 
         .typing-indicator {
             align-self: flex-start;
-            background: rgba(253,246,227,0.05);
+            background: rgba(30,61,47,0.6);
             padding: 15px 20px;
             border-radius: 15px;
             border-bottom-left-radius: 5px;
             display: flex;
-            gap: 5px;
+            gap: 6px;
             align-items: center;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .typing-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: var(--gold);
+            background: #f0c040;
             animation: typingBounce 1.4s infinite;
         }
 
@@ -160,25 +173,25 @@
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
             30% { transform: translateY(-10px); opacity: 1; }
         }
 
         .input-container {
             padding: 20px;
-            border-top: 1px solid rgba(212,168,67,0.2);
+            border-top: 2px solid rgba(240,192,64,0.3);
             display: flex;
             gap: 10px;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
         }
 
         #promptInput {
             flex: 1;
-            padding: 15px;
-            border: 2px solid rgba(212,168,67,0.3);
+            padding: 15px 20px;
+            border: 2px solid rgba(240,192,64,0.4);
             border-radius: 25px;
-            background: rgba(253,246,227,0.1);
-            color: var(--light);
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
             font-size: 1em;
             font-family: inherit;
             outline: none;
@@ -187,41 +200,45 @@
 
         #promptInput:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(212,168,67,0.2);
+            box-shadow: 0 0 25px rgba(240,192,64,0.3);
+            background: rgba(255,255,255,0.15);
         }
 
         #promptInput::placeholder {
-            color: rgba(200,200,200,0.5);
+            color: rgba(255,255,255,0.5);
         }
 
         .btn {
-            padding: 15px 25px;
-            background: linear-gradient(135deg, var(--gold), #b8923c);
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #f0c040, #d4a020);
             border: none;
             border-radius: 25px;
-            color: var(--dark);
+            color: #1a0f05;
             font-weight: bold;
             cursor: pointer;
             font-size: 1em;
             font-family: inherit;
             transition: all 0.3s ease;
             white-space: nowrap;
+            box-shadow: 0 3px 15px rgba(240,192,64,0.3);
         }
 
         .btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212,168,67,0.4);
+            box-shadow: 0 8px 25px rgba(240,192,64,0.5);
+            background: linear-gradient(135deg, #f5c850, #e0b030);
         }
 
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
         .char-count {
             text-align: right;
             font-size: 0.8em;
-            color: rgba(200,200,200,0.5);
+            color: rgba(255,255,255,0.6);
             padding: 5px 15px 0 0;
         }
 
@@ -234,50 +251,63 @@
         }
 
         .suggestion-chip {
-            padding: 8px 15px;
-            background: rgba(212,168,67,0.1);
-            border: 1px solid rgba(212,168,67,0.3);
+            padding: 10px 18px;
+            background: rgba(240,192,64,0.15);
+            border: 1px solid rgba(240,192,64,0.5);
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.85em;
-            color: #d4b896;
+            color: #f0d060;
             transition: all 0.3s ease;
         }
 
         .suggestion-chip:hover {
-            background: rgba(212,168,67,0.2);
+            background: rgba(240,192,64,0.25);
             border-color: var(--gold);
+            color: #fff;
         }
 
         .footer {
             text-align: center;
             padding: 20px;
-            color: rgba(200,200,200,0.4);
-            font-size: 0.8em;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
         }
 
         .error-message {
-            background: rgba(255,0,0,0.1);
-            color: #ff6b6b;
-            padding: 10px;
+            background: rgba(255,0,0,0.15);
+            color: #ff9999;
+            padding: 12px;
             border-radius: 10px;
             text-align: center;
             font-size: 0.9em;
             display: none;
+            margin: 0 20px;
+            border: 1px solid rgba(255,100,100,0.3);
         }
 
         /* Scrollbar styling */
         .chat-messages::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(212,168,67,0.3);
-            border-radius: 3px;
+            background: rgba(240,192,64,0.4);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(240,192,64,0.6);
+        }
+
+        /* SmartiePal widget positioning */
+        #smartiepal-widget {
+            z-index: 1000;
         }
     </style>
 </head>
@@ -336,9 +366,9 @@
             const count = promptInput.value.length;
             charCount.textContent = `${count}/500 characters`;
             if (count > 450) {
-                charCount.style.color = '#ff6b6b';
+                charCount.style.color = '#ff9999';
             } else {
-                charCount.style.color = 'rgba(200,200,200,0.5)';
+                charCount.style.color = 'rgba(255,255,255,0.6)';
             }
         }
 
