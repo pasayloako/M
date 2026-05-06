@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible AI - Your Spiritual Guide</title>
-    
-    <!-- SmartiePal AI Assistant -->
-    <script id="smartiepalScript" src="https://smartiepal.pages.dev/loader.js?assistant_id=276a553a6169dd8cbfa272104178e04f63d9b10258aa52406faf23a32ed8a492" async></script>
+    <title>BibleGPT - AI Bible Assistant</title>
     
     <style>
         :root {
-            --primary: #2c1810;
-            --secondary: #5c3a28;
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-sidebar: #111827;
+            --bg-chat: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --border-color: #2d2d4a;
+            --user-msg-bg: #1e1e3a;
+            --bot-msg-bg: transparent;
+            --input-bg: #1e1e3a;
             --gold: #f0c040;
-            --light: #fff8e7;
-            --dark: #0d0805;
-            --accent: #e74c3c;
-            --user-bg: #1a5276;
-            --bot-bg: #1e3d2f;
         }
 
         * {
@@ -27,77 +29,186 @@
         }
 
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #0d0805 0%, #1a0f08 50%, #0d0805 100%);
-            min-height: 100vh;
-            color: #ffffff;
-            background-image: 
-                radial-gradient(ellipse at top, rgba(240,192,64,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(240,192,64,0.05) 0%, transparent 50%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
-        .header {
-            text-align: center;
-            padding: 30px 20px 20px;
-            border-bottom: 2px solid var(--gold);
-            margin-bottom: 20px;
-            position: relative;
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .header::after {
-            content: '✝';
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #0d0805;
-            padding: 0 15px;
-            font-size: 20px;
-            color: var(--gold);
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .header h1 {
-            font-size: 2.5em;
-            color: var(--gold);
-            text-shadow: 0 2px 15px rgba(240,192,64,0.4);
-            letter-spacing: 2px;
-            margin-bottom: 10px;
+        .sidebar-title .icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
-        .header .subtitle {
-            color: #e8d5b7;
-            font-style: italic;
-            font-size: 1.1em;
+        .new-chat-btn {
+            margin: 12px;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
         }
 
-        .verse-decoration {
-            text-align: center;
-            color: var(--gold);
-            opacity: 0.8;
-            font-style: italic;
-            margin: 10px 0;
-            font-size: 0.9em;
+        .new-chat-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
         }
 
-        .chat-container {
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .history-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+        }
+
+        .history-item.active {
+            background: rgba(139,92,246,0.15);
+            color: var(--text-primary);
+        }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .user-info:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Chat Area */
+        .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: rgba(20,15,10,0.6);
-            border: 2px solid rgba(240,192,64,0.4);
-            border-radius: 15px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 0 50px rgba(240,192,64,0.03);
+            min-width: 0;
+        }
+
+        .chat-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-primary);
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-badge {
+            background: rgba(139,92,246,0.2);
+            color: #a78bfa;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
         }
 
         .chat-messages {
@@ -106,66 +217,85 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            background: rgba(10,5,0,0.3);
+            gap: 20px;
         }
 
         .message {
-            max-width: 80%;
-            padding: 16px 20px;
-            border-radius: 15px;
-            line-height: 1.7;
-            animation: fadeIn 0.3s ease;
-            font-size: 1.05em;
-            word-wrap: break-word;
+            display: flex;
+            gap: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 18px;
         }
 
-        .message.user {
-            align-self: flex-end;
-            background: linear-gradient(135deg, #1a5276, #154360);
-            color: #ffffff;
-            border-bottom-right-radius: 5px;
-            box-shadow: 0 3px 15px rgba(26,82,118,0.4);
-            border: 1px solid rgba(255,255,255,0.2);
+        .message.bot .message-avatar {
+            background: var(--accent);
         }
 
-        .message.bot {
-            align-self: flex-start;
-            background: linear-gradient(135deg, #1e3d2f, #1a3328);
-            color: #e8f5e9;
-            border-bottom-left-radius: 5px;
-            box-shadow: 0 3px 15px rgba(30,61,47,0.4);
-            border: 1px solid rgba(255,255,255,0.2);
+        .message.user .message-avatar {
+            background: #4ade80;
+            color: #000;
         }
 
-        .message.bot.error {
-            border-color: var(--accent);
-            background: linear-gradient(135deg, #4a1515, #3d1010);
-            color: #ffcccc;
+        .message-content {
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .message-role {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .message-text {
+            color: #d1d5db;
+            font-size: 0.95rem;
+        }
+
+        .message.user .message-content {
+            background: var(--user-msg-bg);
+            padding: 12px 16px;
+            border-radius: 12px;
+        }
+
+        .message.user .message-role {
+            display: none;
+        }
+
+        .message.user .message-text {
+            color: #e5e7eb;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 6px;
         }
 
         .typing-indicator {
-            align-self: flex-start;
-            background: rgba(30,61,47,0.6);
-            padding: 15px 20px;
-            border-radius: 15px;
-            border-bottom-left-radius: 5px;
             display: flex;
             gap: 6px;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 0;
         }
 
         .typing-dot {
-            width: 10px;
-            height: 10px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: #f0c040;
+            background: #6b7280;
             animation: typingBounce 1.4s infinite;
         }
 
@@ -174,183 +304,208 @@
 
         @keyframes typingBounce {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
-            30% { transform: translateY(-10px); opacity: 1; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-primary);
         }
 
         .input-container {
-            padding: 20px;
-            border-top: 2px solid rgba(240,192,64,0.3);
+            max-width: 800px;
+            margin: 0 auto;
             display: flex;
             gap: 10px;
-            background: rgba(0,0,0,0.3);
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
         }
 
         #promptInput {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid rgba(240,192,64,0.4);
-            border-radius: 25px;
-            background: rgba(255,255,255,0.1);
-            color: #ffffff;
-            font-size: 1em;
+            width: 100%;
+            padding: 14px 16px;
+            padding-right: 50px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
             font-family: inherit;
             outline: none;
-            transition: all 0.3s ease;
+            resize: none;
+            min-height: 48px;
+            max-height: 150px;
+            transition: border-color 0.2s;
         }
 
         #promptInput:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 25px rgba(240,192,64,0.3);
-            background: rgba(255,255,255,0.15);
+            border-color: var(--accent);
         }
 
         #promptInput::placeholder {
-            color: rgba(255,255,255,0.5);
+            color: #6b7280;
         }
 
-        .btn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #f0c040, #d4a020);
+        .send-btn {
+            background: var(--accent);
             border: none;
-            border-radius: 25px;
-            color: #1a0f05;
-            font-weight: bold;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            box-shadow: 0 3px 15px rgba(240,192,64,0.3);
+            font-size: 18px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240,192,64,0.5);
-            background: linear-gradient(135deg, #f5c850, #e0b030);
+        .send-btn:hover:not(:disabled) {
+            background: var(--accent-hover);
         }
 
-        .btn:disabled {
+        .send-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            box-shadow: none;
         }
 
-        .char-count {
-            text-align: right;
-            font-size: 0.8em;
-            color: rgba(255,255,255,0.6);
-            padding: 5px 15px 0 0;
-        }
-
-        .suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 10px 20px;
-            justify-content: center;
-        }
-
-        .suggestion-chip {
-            padding: 10px 18px;
-            background: rgba(240,192,64,0.15);
-            border: 1px solid rgba(240,192,64,0.5);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85em;
-            color: #f0d060;
-            transition: all 0.3s ease;
-        }
-
-        .suggestion-chip:hover {
-            background: rgba(240,192,64,0.25);
-            border-color: var(--gold);
-            color: #fff;
-        }
-
-        .footer {
+        .disclaimer {
             text-align: center;
-            padding: 20px;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9em;
+            color: #6b7280;
+            font-size: 0.75rem;
+            padding: 8px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .error-message {
-            background: rgba(255,0,0,0.15);
-            color: #ff9999;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 0.9em;
+        /* Scrollbar */
+        .chat-messages::-webkit-scrollbar,
+        .chat-history::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track,
+        .chat-history::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb,
+        .chat-history::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .message {
+                max-width: 100%;
+            }
+            
+            .chat-messages {
+                padding: 12px;
+            }
+        }
+
+        /* Menu toggle for mobile */
+        .menu-toggle {
             display: none;
-            margin: 0 20px;
-            border: 1px solid rgba(255,100,100,0.3);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 6px;
         }
 
-        /* Scrollbar styling */
-        .chat-messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(240,192,64,0.4);
-            border-radius: 4px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: rgba(240,192,64,0.6);
-        }
-
-        /* SmartiePal widget positioning */
-        #smartiepal-widget {
-            z-index: 1000;
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📖 Bible AI</h1>
-            <p class="subtitle">Ask, and it shall be answered — Matthew 7:7</p>
-            <p class="verse-decoration">✦ Your Spiritual Guide & Scripture Companion ✦</p>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <span class="icon">📖</span>
+                BibleGPT
+            </div>
+        </div>
+        
+        <button class="new-chat-btn" onclick="newChat()">
+            <span>+</span> New Chat
+        </button>
+        
+        <div class="chat-history" id="chatHistory">
+            <div class="history-item active" data-id="1" onclick="switchChat(this)">
+                Bible Study Guide
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <span class="user-name">User</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <span class="model-badge">BibleGPT 3.5</span>
+            </div>
+            <div class="chat-header-actions">
+                <button class="header-btn" onclick="newChat()" title="New Chat">+ New</button>
+            </div>
         </div>
 
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot">
-                    🙏 Welcome! I'm your Bible AI assistant. Ask me anything about scripture, faith, prayer, or spiritual guidance. How can I help you today?
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-avatar">📖</div>
+                <div class="message-content">
+                    <div class="message-role">BibleGPT</div>
+                    <div class="message-text">Hello! How can I assist you today with your questions about the Bible?</div>
+                    <div class="message-time" id="initialTime"></div>
                 </div>
             </div>
-
-            <div class="suggestions" id="suggestions">
-                <span class="suggestion-chip" onclick="askSuggestion(this)">What does the Bible say about love?</span>
-                <span class="suggestion-chip" onclick="askSuggestion(this)">Explain John 3:16</span>
-                <span class="suggestion-chip" onclick="askSuggestion(this)">Prayer for peace</span>
-                <span class="suggestion-chip" onclick="askSuggestion(this)">Who was King David?</span>
-            </div>
-
-            <div class="error-message" id="errorMessage"></div>
-            <div class="char-count" id="charCount">0/500 characters</div>
-
-            <div class="input-container">
-                <input 
-                    type="text" 
-                    id="promptInput" 
-                    placeholder="Ask a biblical question... ✝️" 
-                    maxlength="500"
-                    onkeypress="handleKeyPress(event)"
-                    oninput="updateCharCount()"
-                >
-                <button class="btn" id="sendBtn" onclick="sendMessage()">Send 🙏</button>
-            </div>
         </div>
 
-        <div class="footer">
-            <p>"Your word is a lamp to my feet and a light to my path." — Psalm 119:105</p>
+        <div class="input-area">
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="promptInput" 
+                        placeholder="Ask me anything about the Bible..."
+                        maxlength="500"
+                        onkeypress="handleKeyPress(event)"
+                        oninput="updateCharCount()"
+                    >
+                </div>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message">
+                    ➤
+                </button>
+            </div>
+            <div class="disclaimer">
+                BibleGPT can make mistakes. Check important info.
+            </div>
         </div>
     </div>
 
@@ -358,38 +513,78 @@
         const chatMessages = document.getElementById('chatMessages');
         const promptInput = document.getElementById('promptInput');
         const sendBtn = document.getElementById('sendBtn');
-        const errorDiv = document.getElementById('errorMessage');
-        const charCount = document.getElementById('charCount');
-        const suggestions = document.getElementById('suggestions');
+        const chatHistory = document.getElementById('chatHistory');
+        let currentChatId = 1;
+        let chatCount = 1;
 
-        function updateCharCount() {
-            const count = promptInput.value.length;
-            charCount.textContent = `${count}/500 characters`;
-            if (count > 450) {
-                charCount.style.color = '#ff9999';
-            } else {
-                charCount.style.color = 'rgba(255,255,255,0.6)';
+        // Set initial time
+        function updateInitialTime() {
+            const timeEl = document.getElementById('initialTime');
+            if (timeEl) {
+                timeEl.textContent = getTimeAgo(new Date());
             }
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+            return `${Math.floor(diff / 86400)} days ago`;
+        }
+
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
         }
 
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
-            messageDiv.textContent = text;
+            
+            const avatar = sender === 'bot' ? '📖' : 'U';
+            const role = sender === 'bot' ? 'BibleGPT' : 'You';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-role">${role}</div>
+                    <div class="message-text">${escapeHtml(text)}</div>
+                    <div class="message-time">${getTimeAgo(new Date())}</div>
+                </div>
+            `;
+            
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             return messageDiv;
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function addTypingIndicator() {
             const typingDiv = document.createElement('div');
-            typingDiv.className = 'typing-indicator';
-            typingDiv.innerHTML = `
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-            `;
+            typingDiv.className = 'message bot';
             typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">📖</div>
+                <div class="message-content">
+                    <div class="message-role">BibleGPT</div>
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            `;
             chatMessages.appendChild(typingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -401,16 +596,8 @@
             }
         }
 
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        function hideSuggestions() {
-            suggestions.style.display = 'none';
+        function updateCharCount() {
+            // Character count handled by maxlength attribute
         }
 
         async function sendMessage() {
@@ -419,15 +606,13 @@
             if (!prompt) return;
             
             if (prompt.length > 500) {
-                showError('Your question is too long. Please keep it under 500 characters.');
+                alert('Your question is too long. Please keep it under 500 characters.');
                 return;
             }
 
             // Add user message
             addMessage(prompt, 'user');
             promptInput.value = '';
-            updateCharCount();
-            hideSuggestions();
 
             // Disable input
             promptInput.disabled = true;
@@ -435,6 +620,9 @@
 
             // Show typing indicator
             addTypingIndicator();
+
+            // Update sidebar history item
+            updateHistoryItem(prompt);
 
             try {
                 const response = await fetch('/api/ask', {
@@ -479,13 +667,19 @@
             } catch (error) {
                 removeTypingIndicator();
                 const errorMsg = addMessage('❌ ' + error.message, 'bot');
-                errorMsg.classList.add('error');
-                showError(error.message);
+                errorMsg.querySelector('.message-text').style.color = '#fca5a5';
             } finally {
                 // Re-enable input
                 promptInput.disabled = false;
                 sendBtn.disabled = false;
                 promptInput.focus();
+            }
+        }
+
+        function updateHistoryItem(prompt) {
+            const activeItem = chatHistory.querySelector('.history-item.active');
+            if (activeItem && prompt) {
+                activeItem.textContent = prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt;
             }
         }
 
@@ -496,15 +690,56 @@
             }
         }
 
-        function askSuggestion(chip) {
-            promptInput.value = chip.textContent;
-            sendMessage();
+        function newChat() {
+            chatCount++;
+            currentChatId = chatCount;
+            
+            // Add new history item
+            const historyItems = chatHistory.querySelectorAll('.history-item');
+            historyItems.forEach(item => item.classList.remove('active'));
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'history-item active';
+            newItem.dataset.id = currentChatId;
+            newItem.textContent = 'New Chat';
+            newItem.onclick = function() { switchChat(this); };
+            chatHistory.insertBefore(newItem, chatHistory.firstChild);
+            
+            // Clear messages except welcome
+            chatMessages.innerHTML = `
+                <div class="message bot">
+                    <div class="message-avatar">📖</div>
+                    <div class="message-content">
+                        <div class="message-role">BibleGPT</div>
+                        <div class="message-text">Hello! How can I assist you today with your questions about the Bible?</div>
+                        <div class="message-time">${getTimeAgo(new Date())}</div>
+                    </div>
+                </div>
+            `;
+            
+            promptInput.focus();
         }
 
-        // Focus input on load
-        window.addEventListener('load', () => {
-            promptInput.focus();
-            updateCharCount();
+        function switchChat(element) {
+            const historyItems = chatHistory.querySelectorAll('.history-item');
+            historyItems.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            currentChatId = parseInt(element.dataset.id);
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Initialize
+        updateInitialTime();
+        promptInput.focus();
+
+        // Auto-resize input
+        promptInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
     </script>
 </body>
